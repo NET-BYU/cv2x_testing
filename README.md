@@ -35,9 +35,9 @@ This should set the dynamic attenuation between each and every link to 0. Now, i
 ## Repository Setup
 ---
 ### Python Libraries
-(If you are familiar with things like virtual environments, go ahead and just install from requirements.txt (make sure your environemtn name ends in `-env`). If you aren't, go ahead and unfold the following section for instructions on how to do that.)
+(If you are familiar with things like virtual environments, go ahead and just install from requirements.txt (make sure your environment name ends in `-env`). If you aren't, go ahead and unfold the following section for instructions on how to do that.) 
 <details>
-    <summary>Click Here</summary>
+    <summary>:point_down: Click Here</summary>
 In order to run the files in this repo, you will need certain python libraries installed. This section walks you through doing this in a virtual environment. For those who are are already confident in creating their venv or who just want to add the lkibraries to their machine, you can just jump to step 3.
 
 **0. Make sure you have Python's virtual environment library**
@@ -66,6 +66,11 @@ deactivate
 pip install -r requirements.txt
 ```
 This should install all the libraries needed. If you are not using a virtual enviroment, they will be installed to your whole python environment.
+
+The key libraries we need to access are
+* [Pyshark](https://pypi.org/project/pyshark/)
+* [Requests](https://docs.python-requests.org/en/latest/index.html)
+* [YAML](https://python.land/data-processing/python-yaml)
 </details>
 
 ---
@@ -87,6 +92,18 @@ The resulting `cv2x.yaml` file from the previous step has multiple values that n
     * You might remember earlier how we needed the [`static_att` Measurements](#staticatt-measurements) - what ultimately happens is that, on each link, for each final attenuation value from this list, we tell the attenuator mesh to apply a dynamic attenuation equal to `(list_val - static_val)`
 * **trial_length**: This is an easy one ;) just put the trial length in seconds. Each attenuation in the above list will be tested for this time duration.
 * **wireshark_interface**: This is whichever interface on Wireshark you use to receive the forwarded packets. If you are connected via ethernet, it probably runs on `eth0`.
+
+In addition to each of these hyperparamters, you need to create a yaml object for each COTS C-V2X device that will be connected via Ethernet and receiving packets (typically, these are the RSUs). In the `RSU DICT` setion, in the `rsus:` group, add the following for each RSU (or other device) used for the experiments:
+```yaml
+# Below the line that says "rsus:"
+    <rsu_label>:
+        ip: <IPv4 ip address of RSU>
+        port: <src port at RSU>
+        dst_port: <destination port at host>
+        mesh_port: <A-F single character on mesh ports>
+        att_offset: <attenuation offset for RSU (float value)>
+```
+That last value, the attenuation offset, comes from the list you previoulsy gathered in the [`static_att` Measurements](#staticatt-measurements) section.
 
 ---
 ---
