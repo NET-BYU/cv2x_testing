@@ -98,12 +98,19 @@ In addition to each of these hyperparamters, you need to create a yaml object fo
 # Below the line that says "rsus:"
     <rsu_label>:
         ip: <IPv4 ip address of RSU>
-        port: <src port at RSU>
+        src_port: <src port at RSU>
         dst_port: <destination port at host>
         mesh_port: <A-F single character on mesh ports>
         att_offset: <attenuation offset for RSU (float value)>
 ```
 That last value, the attenuation offset, comes from the list you previoulsy gathered in the [`static_att` Measurements](#staticatt-measurements) section.
+
+As for the other elements, you can gather those from a brief live capture. After following the steps in [`static_att` Measurements](#staticatt-measurements), you should have a strong connection between your transmitter and receivers. If you open up Wireshark and look for UDP packets coming in, especially if you kow the IP address of the senders, it should be easy. Look for the information like in the photo below:
+![Example of Wireshark capture with separate RSU data highlighted](./resources/wireshark_rsu_data.png)
+
+And lastly, the `mesh_port` is determined by which SMA port on the Mini-Circuits ZTMN-0695B-S the device is connected to. See the photo below:
+![Use the letter of the port you are hooked in to](./resources/mesh_port_indicator.png)
+
 
 ---
 ---

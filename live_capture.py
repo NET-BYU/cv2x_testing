@@ -3,7 +3,7 @@ from yaml import safe_load
 from mesh_class import MeshClass
 import copy
 
-with open("./cv2x.yaml") as f:
+with open("./cv2x.yml") as f:
     yaml_data = safe_load(f)
 
 mesh = MeshClass(yaml_data["mesh_ip"])
@@ -19,12 +19,12 @@ def clear_data():
 def handle_paket(block):
     for rsu in rsus.keys():
         if (hasattr(block, 'ip')  
-                and str(block['ip'].src) == rsus[rsu]['ip']               # RSU IP Address
-                and str(block['ip'].dst) == yaml_data['host_ip']    # This IP address ### CHANGE MANUALLY IN YAML! ###
-                and str(block['ip'].proto) == '17'                  # UDP Protocol number
+                and str(block['ip'].src) == rsus[rsu]['ip']             # RSU IP Address
+                and str(block['ip'].dst) == yaml_data['host_ip']        # This IP address ### CHANGE MANUALLY IN YAML! ###
+                and str(block['ip'].proto) == '17'                      # UDP Protocol number
             and hasattr(block, 'udp')
-                and str(block['udp'].port) == rsus[rsu]['port']           # This UDP transmisison port            
-                and str(block['udp'].dstport) == rsus[rsu]['dst_port']    # This UDP reception port
+                and str(block['udp'].port) == rsus[rsu]['src_port']     # This UDP transmisison port            
+                and str(block['udp'].dstport) == rsus[rsu]['dst_port']  # This UDP reception port
             and hasattr(block, 'DATA')
         ):
             # If we got in here, then this packet is a forwarded C-V2X packet from the specified RSU
