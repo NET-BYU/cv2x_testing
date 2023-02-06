@@ -91,7 +91,7 @@ class MeshClass:
         else:
             requests.get(
                 f'http://{self.address}/:0{block}:CHAN:{channel}:SETATT:{atten}')
-            print(f"Ports:{port1}{port2} Atten:{atten}\n")
+            print(f"Ports:{port1} {port2}; Atten:{atten}")
 
     def check_att(self, port1: str, port2: str):
         """

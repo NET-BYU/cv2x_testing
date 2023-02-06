@@ -3,6 +3,7 @@ from yaml import safe_load
 from mesh_class import MeshClass
 import copy
 from threading import Event, Thread
+import time
 
 def call_repeatedly(interval, func, *args):
     stopped = Event()
@@ -28,7 +29,7 @@ def display_data():
     cur_time += 1
     print("\r    Time: %d // " % cur_time, end='')
     for rsu in data.keys():
-        print(rsu + " " + str(data[rsu]) + " // ", end='')
+        print(rsu + " ≈ " + str(data[rsu]) + " // ", end='')
 
 
 def clear_data():
@@ -39,14 +40,15 @@ def clear_data():
 
 def handle_paket(block):
     #print("Got something!")
+    i = 0
     for rsu in rsus.keys():
         if (hasattr(block, 'ip')  
-                and str(block['ip'].src) == rsus[rsu]['ip']             # RSU IP Address
-                and str(block['ip'].dst) == yaml_data['host_ip']        # This IP address ### CHANGE MANUALLY IN YAML! ###
-                and str(block['ip'].proto) == '17'                      # UDP Protocol number
+                and str(block['ip'].src) == rsus[rsu]['ip']                 # RSU IP Address
+                and str(block['ip'].dst) == yaml_data['host_ip']            # This IP address ### CHANGE MANUALLY IN YAML! ###
+                and str(block['ip'].proto) == '17'                          # UDP Protocol number
             and hasattr(block, 'udp')
-                and str(block['udp'].port) == rsus[rsu]['src_port']     # This UDP transmisison port            
-                and str(block['udp'].dstport) == rsus[rsu]['dst_port']  # This UDP reception port
+                and str(block['udp'].port) == str(rsus[rsu]['src_port'])    # This UDP transmisison port            
+                and str(block['udp'].dstport) == str(rsus[rsu]['dst_port']) # This UDP reception port
             and hasattr(block, 'DATA')
         ):
             # If we got in here, then this packet is a forwarded C-V2X packet from the specified RSU
@@ -59,8 +61,9 @@ cap = pyshark.LiveCapture(interface=yaml_data["wireshark_interface"],
 for attenuation in yaml_data["attenuations"]:
     # Clear the data and declare the start of the trial
     clear_data()
-    print("Starting trial on attenuation value\x1B[35m %d\x1B[37m db for\x1B[35m %d\x1B[37m seconds..." 
+    print("\x1B[32mSetting up trial on attenuation value\x1B[35m %d\x1B[32m db for\x1B[35m %d\x1B[32m seconds...\x1B[37m" 
         % (attenuation, yaml_data["trial_length"]))
+    
 
     # Go through and set all the attenuation values we need
     for tx_port in yaml_data["static_mesh_ports"]:
@@ -70,7 +73,11 @@ for attenuation in yaml_data["attenuations"]:
             diff_att = attenuation - partial_att
             diff_att = round(diff_att * 4) / 4 # needs a multiple of 0.25
 
-            print('dbg: mesh.set_att(%s, %s, %f)' % (tx_port, rx_port, diff_att))
+            #print('dbg: mesh.set_att(%s, %s, %f)' % (tx_port, rx_port, diff_att))
+            mesh.set_att(tx_port, rx_port, diff_att)
+
+    time.sleep(10) # Delay to allow new setup to settle
+    print("Starting trial:")
 
     # Start the repeating timer
     end_timer = call_repeatedly(1, display_data)
@@ -87,7 +94,12 @@ for attenuation in yaml_data["attenuations"]:
         end_timer()
     #timer.cancel()
     print()
-    print("Ending trial for\x1B[35m %d\x1B[37m db" % attenuation, end="\n\n")
+    print("\x1B[32mEnding trial for\x1B[35m %d\x1B[32m db\x1B[37m" % attenuation, end="\n")
+    
+    print("Saving data from trial...")
+    # Save the results in their own files
+    
 
 
+    
 
