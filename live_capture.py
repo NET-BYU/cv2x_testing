@@ -3,7 +3,7 @@ from yaml import safe_load
 from mesh_class import MeshClass
 import copy
 
-with open("./rsus.yaml") as f:
+with open("./cv2x.yaml") as f:
     yaml_data = safe_load(f)
 
 mesh = MeshClass(yaml_data["mesh_ip"])

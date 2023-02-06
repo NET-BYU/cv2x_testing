@@ -68,7 +68,7 @@ class MeshClass:
         """
         self.address = address
 
-    def set_att(self, port1: str, port2: str, atten: int):
+    def set_att(self, port1: str, port2: str, atten: float):
         """
         set_att:
             This lets you change the attentuation level in on any connection between ports A-F\n
