@@ -31,7 +31,8 @@ def handle_paket(block):
             data[rsu] += 1
             print ("Packet received: ")
 
-cap = pyshark.LiveCapture(interface="wlp2s0", bpf_filter="udp and not src host %s" % yaml_data['host_ip'])
+cap = pyshark.LiveCapture(interface=yaml_data["wireshark_interface"], 
+    bpf_filter="udp and not src host %s" % yaml_data['host_ip'])
 
 print("Starting")
 
