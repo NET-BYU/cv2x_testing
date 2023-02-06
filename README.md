@@ -1,7 +1,7 @@
-# cv2x_testing
+# C-V2X Testing
 NET Lab methods for RSU performance testing.
 
-## Requirements
+## Part 1: Requirements
 ---
 ### Hardware
 * [Mini-Circuits ZTMN-0695B-S](https://www.minicircuits.com/pdfs/ZTMN-0695B_Datasheet.pdf)
@@ -28,11 +28,11 @@ then run it using the command
 ```bash
 python3 clear_mesh.py
 ```
-This should set the dynamic attenuation between each and every link to 0. Now, if you have everything hooked up on RF cables, though, you will still get some static attenuation from the RF cables, the mesh, and any splitters you are using. What you need to do is take measurements using something like a spectrum analyzer at the receiving end of _each_ cable to measure how attenuated the transmitted signal is compared to coming out of the sending device. Record these static attenuation values for each receiver; we will refer to these as `static_att` measurements later on in this readme.
+This should set the dynamic attenuation between each and every link to 0. If you have everything hooked up on RF cables, though, you will still get some static attenuation from the RF cables, the mesh, and any splitters you are using. What you need to do is take measurements using something like a spectrum analyzer at the receiving end of _each_ cable to measure how attenuated the transmitted signal is compared to coming out of the sending device. Record these static attenuation values for each receiver; we will refer to these as `static_att` measurements later on in this readme.
 
 ---
 ---
-## Repository Setup
+## Part 2: Repository Setup
 ---
 ### Python Libraries
 (If you are familiar with things like virtual environments, go ahead and just install from requirements.txt (make sure your environment name ends in `-env`). If you aren't, go ahead and unfold the following section for instructions on how to do that.) 
@@ -114,3 +114,15 @@ And lastly, the `mesh_port` is determined by which SMA port on the Mini-Circuits
 
 ---
 ---
+## Part 3: Running the Code
+One last part of setup might be to allow your account to run wireshark while not in `sudo` mode (if on linux). In order to do this, you can safely follow the instructions provided by Wireshark:
+![Create 'wireshark' group and add your user to it](./resources/wireshark_add_user.png)
+
+Once you have done all of the above setup, you should be ready to run the code!
+
+Run the following command,
+```bash
+python3 live_capture.py
+```
+
+What this will do is run multiple packet captures, each for the duration set by you in `cv2x.yml::trial_length`; in each trial, the attenuation between the transmitter(s) and all the individual receivers will be set to an equal value (using our nifty `static_att` measurements) and kept there for the entire trial duration. The program automatically starts each trial after the other one ends (you can keep track of its progress in the terminal).
