@@ -80,7 +80,7 @@ Run the following command to setup your folder:
 ```bash
 python3 build.py
 ```
-This will perform several functions, primarily giving you some blank folders to store data and results as well as creating an untracked `.yaml` file that will be crucial for the testing.
+This will perform several functions, primarily giving you some blank folders to store data and results as well as creating an untracked `.yml` file that will be crucial for the testing.
 
 ---
 ### Format the .yaml File
