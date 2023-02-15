@@ -4,6 +4,8 @@ from mesh_class import MeshClass
 import copy
 from threading import Event, Thread
 import time
+import os
+from datetime import date
 
 def call_repeatedly(interval, func, *args):
     stopped = Event()
@@ -55,14 +57,36 @@ def handle_paket(block):
             data[rsu] += 1
             #print ("Packet received: ", rsu)
 
-cap = pyshark.LiveCapture(interface=yaml_data["wireshark_interface"], 
-    bpf_filter="udp and not src host %s" % yaml_data['host_ip'])
+def uniquify(path):
+    filename, extension = os.path.splitext(path)
+    counter = 1
+
+    while os.path.exists(path):
+        path = filename + "(" + str(counter) + ")" + extension
+        counter += 1
+
+    return path
 
 for attenuation in yaml_data["attenuations"]:
     # Clear the data and declare the start of the trial
     clear_data()
     print("\x1B[32mSetting up trial on attenuation value\x1B[35m %d\x1B[32m db for\x1B[35m %d\x1B[32m seconds...\x1B[37m" 
         % (attenuation, yaml_data["trial_length"]))
+
+    cap_folder_name = "Packet_Captures/" + date.today().strftime("%b-%d")
+    res_folder_name = "Results/" + date.today().strftime("%b-%d")
+
+    #See if we need to create a new folder and csv file for today for today
+    for newpath in [cap_folder_name, res_folder_name]:
+        if not os.path.exists(newpath):
+            os.makedirs(newpath)
+
+    cap_file_name = uniquify(cap_folder_name + "/attenuation_%d.pcap" % attenuation)
+
+    cap = pyshark.LiveCapture(interface=yaml_data["wireshark_interface"], 
+        bpf_filter="udp and not src host %s" % yaml_data['host_ip'],
+        output_file=cap_file_name)
+
     
 
     # Go through and set all the attenuation values we need
@@ -98,7 +122,39 @@ for attenuation in yaml_data["attenuations"]:
     
     print("Saving data from trial...")
     # Save the results in their own files
+    res_folder_name = "Results/" + date.today().strftime("%b-%d")
+
+    #See if we need to create a new folder and csv file for today for today
+    if not os.path.exists(res_folder_name):
+        os.makedirs(res_folder_name)
+
+    cap.close()
+    for rsu in rsus:
+        
+        
+        total_time_gap = yaml_data["trial_length"]
+        num_packets = data[rsu]
+
+        estimated_num_spaced = int(total_time_gap * 10)
+        percent_reception = float(float(num_packets) / float(estimated_num_spaced))
+
+        
+
+
+        summaries_file_name = '%s/summaries_%s.txt' % (res_folder_name, rsu)
+
+        print("Saving %s data in %s" % (rsu, summaries_file_name))
+
+        print(file=open(summaries_file_name, 'a'))
+        print("Attenuation ", attenuation, file=open(summaries_file_name, 'a'))
+        print("Number of packets: ", num_packets, file=open(summaries_file_name, 'a'))
+        print('Total time gap: ', total_time_gap, file=open(summaries_file_name, 'a'))
+        print('Total expected packets: ', estimated_num_spaced, file=open(summaries_file_name, 'a'))
+        print("Calculated missed packets: ", estimated_num_spaced - num_packets, file=open(summaries_file_name, 'a'))
+        print("Percent reception: ", percent_reception, file=open(summaries_file_name, 'a'))
     
+    print("Data saved 👍\n")
+# At this point, all attenuations have been gathered, and we are ready to display the results.
 
 
     
