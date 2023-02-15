@@ -1,4 +1,4 @@
-from mesh_class import MeshClass
+from resources.mesh_class import MeshClass
 
 ip_address = '192.168.0.1'
 

@@ -20,13 +20,13 @@ NET Lab methods for RSU performance testing.
 
 In order for the attenuation values to be equal across receiving devices, you need to take measurements of the total static attenuation between the transmitters and the receivers while the dynamic attenuation is set to 0. To make this easy, you can simply edit and run the following file:
 
-In `clear_mesh.py`, edit the following line with the IPv4 ip address of the Mini-Circuits ZTMN-0695B-S.
+In `resource/clear_mesh.py`, edit the following line with the IPv4 ip address of the Mini-Circuits ZTMN-0695B-S.
 ```python
 ip_address = '192.168.0.1'
 ```
 then run it using the command
 ```bash
-python3 clear_mesh.py
+python3 resources/clear_mesh.py
 ```
 This should set the dynamic attenuation between each and every link to 0. If you have everything hooked up on RF cables, though, you will still get some static attenuation from the RF cables, the mesh, and any splitters you are using. What you need to do is take measurements using something like a spectrum analyzer at the receiving end of _each_ cable to measure how attenuated the transmitted signal is compared to coming out of the sending device. Record these static attenuation values for each receiver; we will refer to these as `static_att` measurements later on in this readme.
 

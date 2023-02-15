@@ -1,6 +1,6 @@
 import pyshark
 from yaml import safe_load
-from mesh_class import MeshClass
+from resources.mesh_class import MeshClass
 import copy
 from threading import Event, Thread
 import time
