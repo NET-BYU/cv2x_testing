@@ -1,3 +1,16 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+#----------------------------------------------------------------------------
+# Created By  : Jon Backman - @backmanj (GitHub)
+# Created Date: Sep 30, 2022
+# version ='1.0'
+# ---------------------------------------------------------------------------
+""" 
+    A python file to create a class that will interact with the Mini-Circuits
+    ZTMN-0695B-S.
+"""
+# ---------------------------------------------------------------------------
+
 import requests
 # import pycurl
 import urllib3

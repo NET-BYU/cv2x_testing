@@ -1,4 +1,17 @@
-# Python file to setup initial files that aren't included due to the .gitignore, as well as creating directories and such.
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+#----------------------------------------------------------------------------
+# Created By  : Bryson Schiel - @schielb (GitHub)
+# Created Date: Feb 6, 2023
+# Latest Update: Feb 15, 2023
+# version ='1.0'
+# ---------------------------------------------------------------------------
+""" 
+    Python file to setup initial files that aren't included due to the 
+    .gitignore, as well as creating directories and such.
+"""
+# ---------------------------------------------------------------------------
+ 
 import os
 
 yaml_string = \

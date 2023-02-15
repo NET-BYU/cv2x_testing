@@ -1,6 +1,8 @@
 # C-V2X Testing
 NET Lab methods for RSU performance testing.
 
+---
+---
 ## Part 1: Requirements
 ---
 ### Hardware
@@ -125,4 +127,17 @@ Run the following command,
 python3 live_capture.py
 ```
 
-What this will do is run multiple packet captures, each for the duration set by you in `cv2x.yml::trial_length`; in each trial, the attenuation between the transmitter(s) and all the individual receivers will be set to an equal value (using our nifty `static_att` measurements) and kept there for the entire trial duration. The program automatically starts each trial after the other one ends (you can keep track of its progress in the terminal).
+What this will do is run multiple packet captures, each for the duration set by you in `cv2x.yml::trial_length`; in each trial, the attenuation between the transmitter(s) and all the individual receivers will be set to an equal value (using our nifty `static_att` measurements) and kept there for the entire trial duration. The program automatically starts each trial after the previous one ends (you can keep track of its progress in the terminal). Please allow about 10 seconds between trial initialization and trial run for setup.
+
+### Deliverables
+After the Python code has been run, you can expect to have the following:
+* All of the packet capture files for your records and further analysis (look for this in the newly created `Packet_Captures/<date>/` folder).
+* Summaries files for each of the RSUs for each trial(look for this in the newly created `Results/<date>/` folder).
+* A Matplotlib plot for each RSU individually and collectively to see visually how each RSU performed (look for this in the newly created `Results/<date>/` folder). 
+    * Here is an example image:
+    ![Example image for matplotlib output](./resources/Comparison-Attenuations_anonymous.png)
+
+---
+---
+## Thank You!
+A lot of work has gone into this project, and it means a lot to have it reviewed and used. Please feel free to clone it and try your own modifications. Best of luck!

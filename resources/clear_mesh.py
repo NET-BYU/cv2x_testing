@@ -1,3 +1,16 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+#----------------------------------------------------------------------------
+# Created By  : Bryson Schiel - @schielb (GitHub)
+# Created Date: Feb 1, 2023
+# Latest Update: Feb 15, 2023
+# version ='1.0'
+# ---------------------------------------------------------------------------
+""" 
+    A python file to clear the Mini-Circuits Mesh Attenuator
+"""
+# ---------------------------------------------------------------------------
+
 from resources.mesh_class import MeshClass
 
 ip_address = '192.168.0.1'
