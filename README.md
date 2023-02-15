@@ -141,3 +141,5 @@ After the Python code has been run, you can expect to have the following:
 ---
 ## Thank You!
 A lot of work has gone into this project, and it means a lot to have it reviewed and used. Please feel free to clone it and try your own modifications. Best of luck!
+
+A big thanks to Panasonic - Cirrus for funding our work!
