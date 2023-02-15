@@ -6,6 +6,7 @@ from threading import Event, Thread
 import time
 import os
 from datetime import date
+import matplotlib.pyplot as plt
 
 def call_repeatedly(interval, func, *args):
     stopped = Event()
@@ -154,8 +155,64 @@ for attenuation in yaml_data["attenuations"]:
         print("Percent reception: ", percent_reception, file=open(summaries_file_name, 'a'))
     
     print("Data saved 👍\n")
+
+##############################################################################################
 # At this point, all attenuations have been gathered, and we are ready to display the results.
+##############################################################################################
+
+folder_name = "Results/" + date.today().strftime("%b-%d")
+
+for rsu in rsus:
+    file_name = folder_name + "/summaries_%s.txt" % rsu
+
+    values = []
+
+    with open(file_name) as temp_f:
+        datafile = temp_f.readlines()
+
+    num_vals = 0
+    att = 0
+    rec = 0.0
+
+    for line in datafile:
+        if 'Attenuation' in line:
+            att = int(line[12:])
+        if 'Percent reception' in line:
+            rec = float(line[20:])
+            values.append((att, rec))
+    values.sort()
+
+    attenuations = []
+    reception_rates = []
+    for i in values:
+        attenuations.append(i[0])
+        reception_rates.append(i[1] * 100.0)
+
+    data['att'] = attenuations
+    data[rsu] = {}
+    data[rsu]['rate'] = reception_rates
 
 
-    
+    plt.plot(attenuations, reception_rates, marker = 'o')
+    plt.xlabel("Attenuations (dB)")
+    plt.ylabel("Packet Reception Rate (%)")
+    plt.title("Reception Rate per Attenuation (%s)" % rsu)
+    plt.ylim(-4, 104)
+    plt.axhline(y=90, color='red', linestyle='--', label='Critical Safety Limit: 90%')
+    plt.show()
+    plt.savefig(folder_name + '/Attenuations-%s.png' % rsu)
+    plt.clf()
+
+for rsu in rsus:
+    plt.plot(data['att'], data[rsu]['rate'], label=rsu, marker = 'o')
+
+plt.xlabel("Attenuation (db)")
+plt.ylabel("Packet Reception Rate (%)")
+plt.ylim(-4, 104)
+plt.title("Reception Rate per Attenuation (All RSU Comparison)")
+plt.axhline(y=90, color='red', linestyle='--', label='Critical Safety Limit: 90%')
+plt.legend()
+plt.savefig(folder_name + '/Comparison-Attenuations.png')
+plt.show()
+plt.clf()
 
