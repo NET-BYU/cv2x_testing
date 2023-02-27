@@ -32,6 +32,8 @@ python3 resources/clear_mesh.py
 ```
 This should set the dynamic attenuation between each and every link to 0. If you have everything hooked up on RF cables, though, you will still get some static attenuation from the RF cables, the mesh, and any splitters you are using. What you need to do is take measurements using something like a spectrum analyzer at the receiving end of _each_ cable to measure how attenuated the transmitted signal is compared to coming out of the sending device. Record these static attenuation values for each receiver; we will refer to these as `static_att` measurements later on in this readme.
 
+**Important: When you are done getting these `static_att` Measurements, be sure to turn your mesh off and on again; this will reset all the connections to their default (95.25), which will prevent signals from rerouting to give devices better reception rates through low-resistance paths.**
+
 ---
 ---
 ## Part 2: Repository Setup
