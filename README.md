@@ -22,7 +22,7 @@ NET Lab methods for RSU performance testing.
 
 In order for the attenuation values to be equal across receiving devices, you need to take measurements of the total static attenuation between the transmitters and the receivers while the dynamic attenuation is set to 0. To make this easy, you can simply edit and run the following file:
 
-In `resource/clear_mesh.py`, edit the following line with the IPv4 ip address of the Mini-Circuits ZTMN-0695B-S.
+In `resources/clear_mesh.py`, edit the following line with the IPv4 ip address of the Mini-Circuits ZTMN-0695B-S.
 ```python
 ip_address = '192.168.0.1'
 ```
@@ -32,7 +32,10 @@ python3 resources/clear_mesh.py
 ```
 This should set the dynamic attenuation between each and every link to 0. If you have everything hooked up on RF cables, though, you will still get some static attenuation from the RF cables, the mesh, and any splitters you are using. What you need to do is take measurements using something like a spectrum analyzer at the receiving end of _each_ cable to measure how attenuated the transmitted signal is compared to coming out of the sending device. Record these static attenuation values for each receiver; we will refer to these as `static_att` measurements later on in this readme.
 
-**Important: When you are done getting these `static_att` Measurements, be sure to turn your mesh off and on again; this will reset all the connections to their default (95.25), which will prevent signals from rerouting to give devices better reception rates through low-resistance paths.**
+**Important: When you are done getting these `static_att` Measurements, be sure to turn your mesh off and on again; this will reset all the connections to their default (95.25), which will prevent signals from rerouting to give devices better reception rates through low-resistance paths. Alternatively, run the following command:**
+```bash
+python3 resources/clear_mesh.py --reset
+```
 
 ---
 ---
@@ -42,7 +45,7 @@ This should set the dynamic attenuation between each and every link to 0. If you
 (If you are familiar with things like virtual environments, go ahead and just install from requirements.txt (make sure your environment name ends in `-env`). If you aren't, go ahead and unfold the following section for instructions on how to do that.) 
 <details>
     <summary>:point_down: Click Here</summary>
-In order to run the files in this repo, you will need certain python libraries installed. This section walks you through doing this in a virtual environment. For those who are are already confident in creating their venv or who just want to add the lkibraries to their machine, you can just jump to step 3.
+In order to run the files in this repo, you will need certain python libraries installed. This section walks you through doing this in a virtual environment. For those who are are already confident in creating their venv or who just want to add the libraries to their machine, you can just jump to step 3.
 
 **0. Make sure you have Python's virtual environment library**
 ```bash
