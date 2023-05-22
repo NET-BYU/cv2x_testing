@@ -106,7 +106,6 @@ In addition to each of these hyperparamters, you need to create a yaml object fo
     <rsu_label>:
         ip: <IPv4 ip address of RSU>
         src_port: <src port at RSU>
-        dst_port: <destination port at host>
         mesh_port: <A-F single character on mesh ports>
         att_offset: <attenuation offset for RSU (float value)>
 ```

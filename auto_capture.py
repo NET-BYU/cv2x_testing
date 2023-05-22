@@ -63,7 +63,6 @@ def handle_paket(block):
                 and str(block['ip'].dst) == yaml_data['host_ip']            # This IP address ### CHANGE MANUALLY IN YAML! ###
                 and str(block['ip'].proto) == '17'                          # UDP Protocol number
             and hasattr(block, 'udp')
-                and str(block['udp'].port) == str(rsus[rsu]['src_port'])    # This UDP transmisison port            
                 and str(block['udp'].dstport) == str(rsus[rsu]['dst_port']) # This UDP reception port
             and hasattr(block, 'DATA')
         ):
