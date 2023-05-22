@@ -3,8 +3,8 @@
 #----------------------------------------------------------------------------
 # Created By  : Bryson Schiel - @schielb (GitHub)
 # Created Date: Feb 6, 2023
-# Latest Update: Feb 15, 2023
-# version ='1.0'
+# Latest Update: May 22, 2023
+# version ='1.1'
 # ---------------------------------------------------------------------------
 """ 
     Python file to setup initial files that aren't included due to the 
@@ -25,7 +25,7 @@ yaml_string = \
     "#     src_port: <src port at RSU>\n" \
     "#     dst_port: <destination port at host>\n" \
     "#     mesh_port: <A-F single character on mesh ports>\n" \
-    "#     att_offset: <attenuation offset for RSU (float value)>\n" \
+    "#     static_att: <attenuation offset for RSU (float value)>\n" \
     "#\n" \
     "# An example has already been provided for you below...\n\n" \
     "################### META PARAMETERS ###################\n" \
@@ -40,7 +40,7 @@ yaml_string = \
     "\n" \
     "# List of total attenuation values to test\n" \
     "#  An example list from our lab experiment is [90, 100, 105, 107, 109, 111, 113, 115]\n" \
-    "#  IMPORTANT!!! Make sure that these are all higher than any 'att_offset' in your RSUs!!!\n" \
+    "#  IMPORTANT!!! Make sure that these are all higher than any 'static_att' in your RSUs!!!\n" \
     "attenuations: [90, 100, 105, 107, 109, 111, 113, 115]\n" \
     "\n" \
     "# Time length of a trial in seconds (integer)\n" \
@@ -53,10 +53,9 @@ yaml_string = \
     "rsus:\n" \
     "    rsu_1:\n" \
     "        ip: 192.168.0.1\n" \
-    "        src_port: 8080\n" \
     "        dst_port: 8081\n" \
     "        mesh_port: B\n" \
-    "        att_offset: 50.0"
+    "        static_att: 50.0"
 
 with open('cv2x.yml', 'w') as rsu_yaml:
     rsu_yaml.write(yaml_string)

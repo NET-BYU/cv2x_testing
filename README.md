@@ -1,28 +1,42 @@
 # C-V2X Testing
 NET Lab methods for RSU performance testing.
 
+This software is an automated script that tests the signal reception performance of C-V2X equipment. It does this by increasing the signal attenuation between repeated pairings of a transmitter and several receivers, capturing and computing a packet loss rate. It ultimately produces several graphs of result data.
+
+To perform these tests, you will be required to perform several steps of setup, in both the hardware and software layer, but then you will just need to run a python script (such as [`live_capture.py`](./live_capture.py)) and the rest of the process will be automated.
+
 ---
 ---
 ## Part 1: Requirements
 ---
 ### Hardware
-* [Mini-Circuits ZTMN-0695B-S](https://www.minicircuits.com/pdfs/ZTMN-0695B_Datasheet.pdf)
+* [Mini-Circuits ZTMN-0695B-S](https://www.minicircuits.com/pdfs/ZTMN-0695B_Datasheet.pdf) multi-attenuator
 * Any assortment of COTS C-V2X Equipment
     * In our experiments, we used 3-4 RSUs and a single OBU
 * SMA adapters, RF cables, splitters, etc.
 * Spectrum/signal analyzer (we used [one of these](https://www.tek.com/en/products/spectrum-analyzers/rsa500))
 * Where performance requirements demand it, two separate RF-isolation boxes
 ---
+### Firmware
+These instructions assume you have already configured your COTS C-V2X equipment to forward any packets they receive to the computer that this software is running on via UDP. This is needed so the machine can observe the packet reception rate of these devices. Check the manufacturer's guide for instructions on packet forwarded; often, you may need to run [SNMP](https://en.wikipedia.org/wiki/Simple_Network_Management_Protocol) commands, and this may require additional setup on your computer.
+
+---
+
 ### Software
 * [Python](https://www.python.org/)
 * [Wireshark](https://www.wireshark.org/)
+* [Tshark](https://tshark.dev/setup/install/)
 ---
 ### `static_att` Measurements
+Here you will gather the static attenuation values that reside between your senders and receivers due to the physical hardware.
+
 (Certain libraries are required for this step; please consult the [Python Libraries](#python-libraries "Goto Python Libraries") section before trying to perform this step.)
 
-In order for the attenuation values to be equal across receiving devices, you need to take measurements of the total static attenuation between the transmitters and the receivers while the dynamic attenuation is set to 0. To make this easy, you can simply edit and run the following file:
+In the process of transmitting messages from one device to another, you will be trying to measure and control the attenuation between devices. Some of this attenuation will be adjusted manually by the mesh attenuator; hoever, some of this attenuation is present by virtue of using the attenuator mesh and any cables. This difference can skew the performance of different devices relative to each other, and even more so you might not know the actual attenuation across each link.
 
-In `resource/clear_mesh.py`, edit the following line with the IPv4 ip address of the Mini-Circuits ZTMN-0695B-S.
+In order for the attenuation values to be equal across receiving devices, you need to take measurements of the total _static attenuation_ between the transmitters and the receivers while the _dynamic attenuation_ is set to 0. To make this easy, you can simply edit and run the following file:
+
+In `resource/clear_mesh.py`, edit the following line, replacing `192.168.0.1` with the IPv4 ip address of the Mini-Circuits ZTMN-0695B-S.
 ```python
 ip_address = '192.168.0.1'
 ```
@@ -31,6 +45,20 @@ then run it using the command
 python3 resources/clear_mesh.py
 ```
 This should set the dynamic attenuation between each and every link to 0. If you have everything hooked up on RF cables, though, you will still get some static attenuation from the RF cables, the mesh, and any splitters you are using. What you need to do is take measurements using something like a spectrum analyzer at the receiving end of _each_ cable to measure how attenuated the transmitted signal is compared to coming out of the sending device. Record these static attenuation values for each receiver; we will refer to these as `static_att` measurements later on in this readme.
+
+<details>
+    <summary>:point_down: Detailed Instructions</summary>
+
+_Equipment should be turned off before antenna cables are disconnected._
+1. Attach the OBU to the spectrum analyzer, with only a 10 dB attenuator in between the two for equipment safety.
+	- Observe the signal strength on the spectrum analyzer. Add 10dB to this value to account for the attenuator
+2. Attach the OBU to the spectrum analyzer, but this time through all the cables and other equipment that attach between the sender (often OBU) and the antenna input where your receivers (often RSUs) are hooked up.
+	1. Zero-out the attenuator using `python3 resources/clear_mesh.py`
+	2. Observe the signal strength on the spectrum analyzer
+    3. Repeat this test for each RSU you wish to evaluate
+3. Calculate the absolute difference between the two signal values. This will be the static attenuation between the sender and receiver produced naturally by the equipment itself. Save this value for later - you'll need it to enter this information into a configuration file to calibrate the testing software.
+</details>
+
 
 **Important: When you are done getting these `static_att` Measurements, be sure to turn your mesh off and on again; this will reset all the connections to their default (95.25), which will prevent signals from rerouting to give devices better reception rates through low-resistance paths.**
 
@@ -82,18 +110,18 @@ The key libraries we need to access are
 
 Run the following command to setup your folder:
 ```bash
-python3 build.py
+python3 resources/build.py
 ```
-This will perform several functions, primarily giving you some blank folders to store data and results as well as creating an untracked `.yml` file that will be crucial for the testing.
+This will perform several functions, primarily giving you some blank folders (`Packet_Captures`, where pcap files are saved for reuse and further analysis; also `Results`, which stores summary files and graphs of your experiments) as well as creating an untracked `.yml` file that will be crucial for the testing.
 
 ---
 ### Format the .yaml File
 The resulting `cv2x.yaml` file from the previous step has multiple values that need to be initialized for your particular experimental setup. They are the following:
 * **host_ip**: The IPv4 ip address of the computer that will be running the experiments.
 * **mesh_ip**: The IPv4 ip address of the Mini-Circuits ZTMN-0695B-S
-* **static_mesh_ports**: You should have one or more devices that are set as static transmitters (or receivers) that work opposite the RSUs; write down in Python list format the ports on the attenuator mesh that these are plugged into. _For example:_ `['A', 'B']`
+* **static_mesh_ports**: You should have one or more devices that are set as static transmitters (or receivers) that send to/receive from the RSUs; write down in Python list format the ports on the attenuator mesh that these are plugged into. _For example:_ `['A', 'B']`
 * **attenuations**: A list of real-number attenuation values you wish to test. When the script is run, each of these values will be applied to each RF link that is being tested._For example:_ `[90, 100, 105, 107, 109, 111, 113, 115]`
-    * You might remember earlier how we needed the [`static_att` Measurements](#staticatt-measurements) - what ultimately happens is that, on each link, for each final attenuation value from this list, we tell the attenuator mesh to apply a dynamic attenuation equal to `(list_val - static_val)`
+    * You might remember earlier how we needed the [`static_att` Measurements](#static_att-measurements) - what ultimately happens is that, on each link, for each final attenuation value from this list, we tell the attenuator mesh to apply a dynamic attenuation equal to `(list_val - static_val)`
 * **trial_length**: This is an easy one ;) just put the trial length in seconds. Each attenuation in the above list will be tested for this time duration.
 * **wireshark_interface**: This is whichever interface on Wireshark you use to receive the forwarded packets. If you are connected via ethernet, it probably runs on `eth0`.
 
@@ -102,14 +130,13 @@ In addition to each of these hyperparamters, you need to create a yaml object fo
 # Below the line that says "rsus:"
     <rsu_label>:
         ip: <IPv4 ip address of RSU>
-        src_port: <src port at RSU>
         dst_port: <destination port at host>
         mesh_port: <A-F single character on mesh ports>
-        att_offset: <attenuation offset for RSU (float value)>
+        static_att: <attenuation offset for RSU (float value)>
 ```
-That last value, the attenuation offset, comes from the list you previoulsy gathered in the [`static_att` Measurements](#staticatt-measurements) section.
+That last value, the static attenuation, comes from the list you previoulsy gathered in the [`static_att` Measurements](#static_att-measurements) section. Put in the total difference you recorded between the sender and the receivers in terms of dBm.
 
-As for the other elements, you can gather those from a brief live capture. After following the steps in [`static_att` Measurements](#staticatt-measurements), you should have a strong connection between your transmitter and receivers. If you open up Wireshark and look for UDP packets coming in, especially if you kow the IP address of the senders, it should be easy. Look for the information like in the photo below:
+As for the other elements, you can gather those from a brief live capture. After following the steps in [`static_att` Measurements](#static_att-measurements), you should have a strong connection between your transmitter and receivers. If you open up Wireshark and look for UDP packets coming in, especially if you kow the IP address of the senders, it should be easy. Look for the information like in the photo below:
 ![Example of Wireshark capture with separate RSU data highlighted](./resources/wireshark_rsu_data.png)
 
 And lastly, the `mesh_port` is determined by which SMA port on the Mini-Circuits ZTMN-0695B-S the device is connected to. See the photo below:
@@ -119,7 +146,7 @@ And lastly, the `mesh_port` is determined by which SMA port on the Mini-Circuits
 ---
 ---
 ## Part 3: Running the Code
-One last part of setup might be to allow your account to run wireshark while not in `sudo` mode (if on linux). In order to do this, you can safely follow the instructions provided by Wireshark:
+On Linux machines, if you have not already granted your user the privileges to run Wireshark while not in `sudo` mode, you must do so. In order to do this, you can safely follow the instructions provided by Wireshark:
 ![Create 'wireshark' group and add your user to it](./resources/wireshark_add_user.png)
 
 Once you have done all of the above setup, you should be ready to run the code!

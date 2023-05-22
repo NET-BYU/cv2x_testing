@@ -108,7 +108,7 @@ for attenuation in yaml_data["attenuations"]:
     for tx_port in yaml_data["static_mesh_ports"]:
         for rsu in rsus.keys():
             rx_port = rsus[rsu]["mesh_port"]
-            partial_att = rsus[rsu]["att_offset"]
+            partial_att = rsus[rsu]["static_att"]
             diff_att = attenuation - partial_att
             diff_att = round(diff_att * 4) / 4 # needs a multiple of 0.25
 
