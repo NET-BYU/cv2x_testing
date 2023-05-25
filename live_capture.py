@@ -137,13 +137,9 @@ for attenuation in yaml_data["attenuations"]:
     print("\x1B[32mEnding trial for\x1B[35m %d\x1B[32m db\x1B[37m" % attenuation, end="\n")
     
     print("Saving data from trial...")
-    # # Save the results in their own files
-    # res_folder_name = "Results/" + date.today().strftime("%b-%d")
+    
 
-    # #See if we need to create a new folder and csv file for today for today
-    # if not os.path.exists(res_folder_name):
-    #     os.makedirs(res_folder_name)
-
+    # Save the results in their own files
     cap.close()
     for rsu in rsus:
         
