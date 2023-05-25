@@ -134,8 +134,6 @@ In addition to each of these hyperparamters, you need to create a yaml object fo
         mesh_port: <A-F single character on mesh ports>
         static_att: <attenuation offset for RSU (float value)>
 ```
-
-
 As for the other elements, you can gather those from a brief live capture. After following the steps in [`static_att` Measurements](#static_att-measurements), you should have a strong connection between your transmitter and receivers. If you open up Wireshark and look for UDP packets coming in, especially if you kow the IP address of the senders, it should be easy. Look for the information like in the photo below:
 ![Example of Wireshark capture with separate RSU data highlighted](./resources/wireshark_rsu_data.png)
 
