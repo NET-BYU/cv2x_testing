@@ -3,8 +3,8 @@
 #----------------------------------------------------------------------------
 # Created By  : Bryson Schiel - @schielb (GitHub)
 # Created Date: Feb 1, 2023
-# Latest Update: Feb 15, 2023
-# version ='1.0'
+# Latest Update: May 25, 2023
+# version ='1.1'
 # ---------------------------------------------------------------------------
 """ 
     A python file to iteratively test different attenuation values on 
@@ -89,13 +89,14 @@ for newpath in [cap_folder_name, res_folder_name]:
     if not os.path.exists(newpath):
         os.makedirs(newpath)
 
+###############################################################################
+# At this point, folders have been set up, now we will gather the attenuations.
+###############################################################################
 for attenuation in yaml_data["attenuations"]:
     # Clear the data and declare the start of the trial
     clear_data()
     print("\x1B[32mSetting up trial on attenuation value\x1B[35m %d\x1B[32m db for\x1B[35m %d\x1B[32m seconds...\x1B[37m" 
         % (attenuation, yaml_data["trial_length"]))
-
-    
 
     cap_file_name = uniquify(cap_folder_name + "/attenuation_%d.pcap" % attenuation)
 
@@ -103,7 +104,6 @@ for attenuation in yaml_data["attenuations"]:
         bpf_filter="udp and not src host %s" % yaml_data['host_ip'],
         output_file=cap_file_name)
 
-    
 
     # Go through and set all the attenuation values we need
     for tx_port in yaml_data["static_mesh_ports"]:
@@ -113,7 +113,6 @@ for attenuation in yaml_data["attenuations"]:
             diff_att = attenuation - partial_att
             diff_att = round(diff_att * 4) / 4 # needs a multiple of 0.25
 
-            #print('dbg: mesh.set_att(%s, %s, %f)' % (tx_port, rx_port, diff_att))
             mesh.set_att(tx_port, rx_port, diff_att)
 
     time.sleep(10) # Delay to allow new setup to settle
@@ -132,7 +131,6 @@ for attenuation in yaml_data["attenuations"]:
             pass
     finally:
         end_timer()
-    #timer.cancel()
     print()
     print("\x1B[32mEnding trial for\x1B[35m %d\x1B[32m db\x1B[37m" % attenuation, end="\n")
     
@@ -143,15 +141,11 @@ for attenuation in yaml_data["attenuations"]:
     cap.close()
     for rsu in rsus:
         
-        
         total_time_gap = yaml_data["trial_length"]
         num_packets = data[rsu]
 
         estimated_num_spaced = int(total_time_gap * 10)
         percent_reception = float(float(num_packets) / float(estimated_num_spaced))
-
-        
-
 
         summaries_file_name = '%s/summaries_%s.txt' % (res_folder_name, rsu)
 
@@ -171,7 +165,7 @@ for attenuation in yaml_data["attenuations"]:
 # At this point, all attenuations have been gathered, and we are ready to display the results.
 ##############################################################################################
 
-
+# Display each individual RSU's performance
 for rsu in rsus:
     file_name = res_folder_name + "/summaries_%s.txt" % rsu
 
@@ -213,6 +207,7 @@ for rsu in rsus:
     plt.savefig(res_folder_name + '/Attenuations-%s.png' % rsu)
     plt.clf()
 
+# Display all performances on a single graph for comparison
 for rsu in rsus:
     plt.plot(data['att'], data[rsu]['rate'], label=rsu, marker = 'o')
 
