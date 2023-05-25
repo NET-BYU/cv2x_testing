@@ -140,7 +140,7 @@ As for the other elements, you can gather those from a brief live capture. After
 Next, the `mesh_port` is determined by which SMA port on the Mini-Circuits ZTMN-0695B-S the device is connected to. See the photo below:
 ![Use the letter of the port you are hooked in to](./resources/mesh_port_indicator.png)
 
-And lastly, the static attenuation comes from the list you previoulsy gathered in the [`static_att` Measurements](#static_att-measurements) section. Put in the total difference you recorded between the sender and the receivers in terms of dBm.
+And lastly, the static attenuation comes from the list you previously gathered in the [`static_att` Measurements](#static_att-measurements) section. Put in the total difference you recorded between the sender and the receivers in terms of dBm.
 
 
 ---
@@ -161,7 +161,7 @@ What this will do is run multiple packet captures, each for the duration set by 
 ### Deliverables
 After the Python code has been run, you can expect to have the following:
 * All of the packet capture files for your records and further analysis (look for this in the newly created `Packet_Captures/<date>/` folder).
-* Summaries files for each of the RSUs for each trial(look for this in the newly created `Results/<date>/` folder).
+* Summaries files for each of the RSUs for each trial (look for this in the newly created `Results/<date>/` folder).
 * A Matplotlib plot for each RSU individually and collectively to see visually how each RSU performed (look for this in the newly created `Results/<date>/` folder). 
     * Here is an example image:
     ![Example image for matplotlib output](./resources/Comparison-Attenuations_anonymous.png)
