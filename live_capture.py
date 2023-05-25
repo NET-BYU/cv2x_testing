@@ -3,8 +3,8 @@
 #----------------------------------------------------------------------------
 # Created By  : Bryson Schiel - @schielb (GitHub)
 # Created Date: Feb 1, 2023
-# Latest Update: Feb 15, 2023
-# version ='1.0'
+# Latest Update: May 25, 2023
+# version ='1.1'
 # ---------------------------------------------------------------------------
 """ 
     A python file to iteratively test different attenuation values on 
@@ -19,7 +19,7 @@ import copy
 from threading import Event, Thread
 import time
 import os
-from datetime import date
+from datetime import datetime
 import matplotlib.pyplot as plt
 
 def call_repeatedly(interval, func, *args):
@@ -64,7 +64,6 @@ def handle_paket(block):
                 and str(block['ip'].dst) == yaml_data['host_ip']            # This IP address ### CHANGE MANUALLY IN YAML! ###
                 and str(block['ip'].proto) == '17'                          # UDP Protocol number
             and hasattr(block, 'udp')
-                and str(block['udp'].port) == str(rsus[rsu]['src_port'])    # This UDP transmisison port            
                 and str(block['udp'].dstport) == str(rsus[rsu]['dst_port']) # This UDP reception port
             and hasattr(block, 'DATA')
         ):
@@ -82,19 +81,22 @@ def uniquify(path):
 
     return path
 
+cap_folder_name = "Packet_Captures/" + datetime.now().strftime("%b-%d-%H:%M:%S")
+res_folder_name = "Results/" + datetime.now().strftime("%b-%d-%H:%M:%S")
+
+#See if we need to create a new folder and csv file for today for today
+for newpath in [cap_folder_name, res_folder_name]:
+    if not os.path.exists(newpath):
+        os.makedirs(newpath)
+
+###############################################################################
+# At this point, folders have been set up, now we will gather the attenuations.
+###############################################################################
 for attenuation in yaml_data["attenuations"]:
     # Clear the data and declare the start of the trial
     clear_data()
     print("\x1B[32mSetting up trial on attenuation value\x1B[35m %d\x1B[32m db for\x1B[35m %d\x1B[32m seconds...\x1B[37m" 
         % (attenuation, yaml_data["trial_length"]))
-
-    cap_folder_name = "Packet_Captures/" + date.today().strftime("%b-%d")
-    res_folder_name = "Results/" + date.today().strftime("%b-%d")
-
-    #See if we need to create a new folder and csv file for today for today
-    for newpath in [cap_folder_name, res_folder_name]:
-        if not os.path.exists(newpath):
-            os.makedirs(newpath)
 
     cap_file_name = uniquify(cap_folder_name + "/attenuation_%d.pcap" % attenuation)
 
@@ -102,17 +104,15 @@ for attenuation in yaml_data["attenuations"]:
         bpf_filter="udp and not src host %s" % yaml_data['host_ip'],
         output_file=cap_file_name)
 
-    
 
     # Go through and set all the attenuation values we need
     for tx_port in yaml_data["static_mesh_ports"]:
         for rsu in rsus.keys():
             rx_port = rsus[rsu]["mesh_port"]
-            partial_att = rsus[rsu]["att_offset"]
+            partial_att = rsus[rsu]["static_att"]
             diff_att = attenuation - partial_att
             diff_att = round(diff_att * 4) / 4 # needs a multiple of 0.25
 
-            #print('dbg: mesh.set_att(%s, %s, %f)' % (tx_port, rx_port, diff_att))
             mesh.set_att(tx_port, rx_port, diff_att)
 
     time.sleep(10) # Delay to allow new setup to settle
@@ -131,30 +131,21 @@ for attenuation in yaml_data["attenuations"]:
             pass
     finally:
         end_timer()
-    #timer.cancel()
     print()
     print("\x1B[32mEnding trial for\x1B[35m %d\x1B[32m db\x1B[37m" % attenuation, end="\n")
     
     print("Saving data from trial...")
+    
+
     # Save the results in their own files
-    res_folder_name = "Results/" + date.today().strftime("%b-%d")
-
-    #See if we need to create a new folder and csv file for today for today
-    if not os.path.exists(res_folder_name):
-        os.makedirs(res_folder_name)
-
     cap.close()
     for rsu in rsus:
-        
         
         total_time_gap = yaml_data["trial_length"]
         num_packets = data[rsu]
 
         estimated_num_spaced = int(total_time_gap * 10)
         percent_reception = float(float(num_packets) / float(estimated_num_spaced))
-
-        
-
 
         summaries_file_name = '%s/summaries_%s.txt' % (res_folder_name, rsu)
 
@@ -174,10 +165,9 @@ for attenuation in yaml_data["attenuations"]:
 # At this point, all attenuations have been gathered, and we are ready to display the results.
 ##############################################################################################
 
-folder_name = "Results/" + date.today().strftime("%b-%d")
-
+# Display each individual RSU's performance
 for rsu in rsus:
-    file_name = folder_name + "/summaries_%s.txt" % rsu
+    file_name = res_folder_name + "/summaries_%s.txt" % rsu
 
     values = []
 
@@ -214,9 +204,10 @@ for rsu in rsus:
     plt.ylim(-4, 104)
     plt.axhline(y=90, color='red', linestyle='--', label='Critical Safety Limit: 90%')
     plt.show()
-    plt.savefig(folder_name + '/Attenuations-%s.png' % rsu)
+    plt.savefig(res_folder_name + '/Attenuations-%s.png' % rsu)
     plt.clf()
 
+# Display all performances on a single graph for comparison
 for rsu in rsus:
     plt.plot(data['att'], data[rsu]['rate'], label=rsu, marker = 'o')
 
@@ -226,7 +217,7 @@ plt.ylim(-4, 104)
 plt.title("Reception Rate per Attenuation (All RSU Comparison)")
 plt.axhline(y=90, color='red', linestyle='--', label='Critical Safety Limit: 90%')
 plt.legend()
-plt.savefig(folder_name + '/Comparison-Attenuations.png')
+plt.savefig(res_folder_name + '/Comparison-Attenuations.png')
 plt.show()
 plt.clf()
 
