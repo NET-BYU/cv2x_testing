@@ -134,13 +134,15 @@ In addition to each of these hyperparamters, you need to create a yaml object fo
         mesh_port: <A-F single character on mesh ports>
         static_att: <attenuation offset for RSU (float value)>
 ```
-That last value, the static attenuation, comes from the list you previoulsy gathered in the [`static_att` Measurements](#static_att-measurements) section. Put in the total difference you recorded between the sender and the receivers in terms of dBm.
+
 
 As for the other elements, you can gather those from a brief live capture. After following the steps in [`static_att` Measurements](#static_att-measurements), you should have a strong connection between your transmitter and receivers. If you open up Wireshark and look for UDP packets coming in, especially if you kow the IP address of the senders, it should be easy. Look for the information like in the photo below:
 ![Example of Wireshark capture with separate RSU data highlighted](./resources/wireshark_rsu_data.png)
 
-And lastly, the `mesh_port` is determined by which SMA port on the Mini-Circuits ZTMN-0695B-S the device is connected to. See the photo below:
+Next, the `mesh_port` is determined by which SMA port on the Mini-Circuits ZTMN-0695B-S the device is connected to. See the photo below:
 ![Use the letter of the port you are hooked in to](./resources/mesh_port_indicator.png)
+
+And lastly, the static attenuation comes from the list you previoulsy gathered in the [`static_att` Measurements](#static_att-measurements) section. Put in the total difference you recorded between the sender and the receivers in terms of dBm.
 
 
 ---
