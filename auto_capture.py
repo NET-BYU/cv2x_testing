@@ -89,8 +89,8 @@ def uniquify(path):
 #  knee for the other RSUs. I think the best way is to find a middle sort option for each RSU, and in 
 #  reality we need to focus on 1 RSU at a time. We will probably wind up having to go back and forth quite 
 #  a bit to make it work out, but that should be okay.
-bottom_att = 75
-top_att = 120
+bottom_att = yaml_data["att_low"]
+top_att = yaml_data["att_high"]
 attenuation = bottom_att
 
 critical_safety_limit = 0.9
@@ -171,6 +171,8 @@ while num_knees_found < num_rsus:
         os.makedirs(res_folder_name)
 
     cap.close()
+
+    results[attenuation] = {}
     
     for rsu in rsus:
         
@@ -209,7 +211,7 @@ while num_knees_found < num_rsus:
     
     print("Data saved 👍\n")
     # Here, we reset each knee as needed
-    for rsu in range(num_knees_found, num_rsus):
+    for rsu in list(rsus)[num_knees_found:]:
         if knee_finders[rsu]["top"] - knee_finders[rsu]["bottom"] == 1:
             knee_finders[rsu]["knee_found"] = True
             num_knees_found += 1
@@ -222,7 +224,8 @@ while num_knees_found < num_rsus:
 
     # Here, we need to set the "attenuation" variable for the next loop
     if num_knees_found < num_rsus:
-        attenuation = midway(knee_finders[num_knees_found]["bottom"], knee_finders[num_knees_found]["top"])
+        nkf = list(knee_finders)[num_knees_found]
+        attenuation = midway(knee_finders[nkf]["bottom"], knee_finders[nkf]["top"])
         
         print("New attenuation: %d" % attenuation)
 
