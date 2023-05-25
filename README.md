@@ -16,6 +16,10 @@ To perform these tests, you will be required to perform several steps of setup, 
 * SMA adapters, RF cables, in-line attenuators, splitters, etc.
 * Spectrum/signal analyzer (we used [one of these](https://www.tek.com/en/products/spectrum-analyzers/rsa500))
 * Where performance requirements demand it, two separate RF-isolation boxes
+
+An example setup can be seen in the photo below.
+
+![A visual example fo the setup of the lab hardware equipment.](./resources/Indoor_Setup.png)
 ---
 ### Firmware
 These instructions assume you have already configured your COTS C-V2X equipment to forward any packets they receive to the computer that this software is running on via UDP. This is needed so the machine can observe the packet reception rate of these devices. Check the manufacturer's guide for instructions on packet forwarded; often, you may need to run [SNMP](https://en.wikipedia.org/wiki/Simple_Network_Management_Protocol) commands, and this may require additional setup on your computer.
