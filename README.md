@@ -13,7 +13,7 @@ To perform these tests, you will be required to perform several steps of setup, 
 * [Mini-Circuits ZTMN-0695B-S](https://www.minicircuits.com/pdfs/ZTMN-0695B_Datasheet.pdf) multi-attenuator
 * Any assortment of COTS C-V2X Equipment
     * In our experiments, we used 3-4 RSUs and a single OBU
-* SMA adapters, RF cables, splitters, etc.
+* SMA adapters, RF cables, in-line attenuators, splitters, etc.
 * Spectrum/signal analyzer (we used [one of these](https://www.tek.com/en/products/spectrum-analyzers/rsa500))
 * Where performance requirements demand it, two separate RF-isolation boxes
 ---
@@ -32,7 +32,7 @@ Here you will gather the static attenuation values that reside between your send
 
 (Certain libraries are required for this step; please consult the [Python Libraries](#python-libraries "Goto Python Libraries") section before trying to perform this step.)
 
-In the process of transmitting messages from one device to another, you will be trying to measure and control the attenuation between devices. Some of this attenuation will be adjusted manually by the mesh attenuator; hoever, some of this attenuation is present by virtue of using the attenuator mesh and any cables. This difference can skew the performance of different devices relative to each other, and even more so you might not know the actual attenuation across each link.
+In the process of transmitting messages from one device to another, you will be trying to measure and control the attenuation between devices. Some of this attenuation will be adjusted automatically by the mesh attenuator. However, the natural properties of the mesh attenuator, RF cabling, and any splitters you are using, will introduce additional static attenuation. How much static attenuation is introduced can vary from one cable to the next, and this variation needs to be controlled for in order to prevent the data from being artificially skewed.
 
 In order for the attenuation values to be equal across receiving devices, you need to take measurements of the total _static attenuation_ between the transmitters and the receivers while the _dynamic attenuation_ is set to 0. To make this easy, you can simply edit and run the following file:
 
@@ -44,7 +44,7 @@ then run it using the command
 ```bash
 python3 resources/clear_mesh.py
 ```
-This should set the dynamic attenuation between each and every link to 0. If you have everything hooked up on RF cables, though, you will still get some static attenuation from the RF cables, the mesh, and any splitters you are using. What you need to do is take measurements using something like a spectrum analyzer at the receiving end of _each_ cable to measure how attenuated the transmitted signal is compared to coming out of the sending device. Record these static attenuation values for each receiver; we will refer to these as `static_att` measurements later on in this readme.
+This should set the dynamic attenuation between each and every link to 0. If you have everything hooked up on RF cables, though, you will still get some static attenuation from the RF cables, the mesh, and any splitters you are using. What you need to do is take measurements using something like a spectrum analyzer at the receiving end of _each_ communication endpoint to measure how attenuated the transmitted signal is compared to coming out of the sending device (so record once at the transmitter and again at the end of the line of cables leading to each receiver). Record these static attenuation values for each receiver; we will refer to these as `static_att` measurements later on in this readme.
 
 <details>
     <summary>:point_down: Detailed Instructions</summary>
