@@ -19,7 +19,7 @@ import copy
 from threading import Event, Thread
 import time
 import os
-from datetime import date
+from datetime import datetime
 import matplotlib.pyplot as plt
 
 def call_repeatedly(interval, func, *args):
@@ -81,19 +81,21 @@ def uniquify(path):
 
     return path
 
+cap_folder_name = "Packet_Captures/" + datetime.now().strftime("%b-%d-%H:%M:%S")
+res_folder_name = "Results/" + datetime.now().strftime("%b-%d-%H:%M:%S")
+
+#See if we need to create a new folder and csv file for today for today
+for newpath in [cap_folder_name, res_folder_name]:
+    if not os.path.exists(newpath):
+        os.makedirs(newpath)
+
 for attenuation in yaml_data["attenuations"]:
     # Clear the data and declare the start of the trial
     clear_data()
     print("\x1B[32mSetting up trial on attenuation value\x1B[35m %d\x1B[32m db for\x1B[35m %d\x1B[32m seconds...\x1B[37m" 
         % (attenuation, yaml_data["trial_length"]))
 
-    cap_folder_name = "Packet_Captures/" + date.today().strftime("%b-%d")
-    res_folder_name = "Results/" + date.today().strftime("%b-%d")
-
-    #See if we need to create a new folder and csv file for today for today
-    for newpath in [cap_folder_name, res_folder_name]:
-        if not os.path.exists(newpath):
-            os.makedirs(newpath)
+    
 
     cap_file_name = uniquify(cap_folder_name + "/attenuation_%d.pcap" % attenuation)
 
@@ -135,12 +137,12 @@ for attenuation in yaml_data["attenuations"]:
     print("\x1B[32mEnding trial for\x1B[35m %d\x1B[32m db\x1B[37m" % attenuation, end="\n")
     
     print("Saving data from trial...")
-    # Save the results in their own files
-    res_folder_name = "Results/" + date.today().strftime("%b-%d")
+    # # Save the results in their own files
+    # res_folder_name = "Results/" + date.today().strftime("%b-%d")
 
-    #See if we need to create a new folder and csv file for today for today
-    if not os.path.exists(res_folder_name):
-        os.makedirs(res_folder_name)
+    # #See if we need to create a new folder and csv file for today for today
+    # if not os.path.exists(res_folder_name):
+    #     os.makedirs(res_folder_name)
 
     cap.close()
     for rsu in rsus:
@@ -173,10 +175,9 @@ for attenuation in yaml_data["attenuations"]:
 # At this point, all attenuations have been gathered, and we are ready to display the results.
 ##############################################################################################
 
-folder_name = "Results/" + date.today().strftime("%b-%d")
 
 for rsu in rsus:
-    file_name = folder_name + "/summaries_%s.txt" % rsu
+    file_name = res_folder_name + "/summaries_%s.txt" % rsu
 
     values = []
 
@@ -213,7 +214,7 @@ for rsu in rsus:
     plt.ylim(-4, 104)
     plt.axhline(y=90, color='red', linestyle='--', label='Critical Safety Limit: 90%')
     plt.show()
-    plt.savefig(folder_name + '/Attenuations-%s.png' % rsu)
+    plt.savefig(res_folder_name + '/Attenuations-%s.png' % rsu)
     plt.clf()
 
 for rsu in rsus:
@@ -225,7 +226,7 @@ plt.ylim(-4, 104)
 plt.title("Reception Rate per Attenuation (All RSU Comparison)")
 plt.axhline(y=90, color='red', linestyle='--', label='Critical Safety Limit: 90%')
 plt.legend()
-plt.savefig(folder_name + '/Comparison-Attenuations.png')
+plt.savefig(res_folder_name + '/Comparison-Attenuations.png')
 plt.show()
 plt.clf()
 
