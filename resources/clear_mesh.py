@@ -3,18 +3,23 @@
 #----------------------------------------------------------------------------
 # Created By  : Bryson Schiel - @schielb (GitHub)
 # Created Date: Feb 1, 2023
-# Latest Update: May 18, 2023
+# Latest Update: May 26, 2023
 # version ='1.1'
 # ---------------------------------------------------------------------------
 """ 
-    A python file to clear the Mini-Circuits Mesh Attenuator and reset it
+    A python file to clear the Mini-Circuits Mesh Attenuator
 """
 # ---------------------------------------------------------------------------
 
 from mesh_class import MeshClass
 import sys
+from yaml import safe_load
 
-ip_address = '192.168.0.1'
+# It is anticipated that this file be run from the cv2x_testing folder as "python3 resources/clear_mesh.py"
+with open("./resources/mesh_ip.yml") as f:
+    yaml_data = safe_load(f)
+
+ip_address = yaml_data["ip_address"]
 
 mesh = MeshClass(ip_address)
 
@@ -35,7 +40,6 @@ elif len(args) == 2:
 else:
     print("Error: too many args passed - expecting nothing or '--reset'", file=sys.stderr)
     exit(1)
-
 
 for port1 in port1s:
     for port2 in port2s:
