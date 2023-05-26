@@ -3,8 +3,8 @@
 #----------------------------------------------------------------------------
 # Created By  : Bryson Schiel - @schielb (GitHub)
 # Created Date: Feb 1, 2023
-# Latest Update: Feb 15, 2023
-# version ='1.0'
+# Latest Update: May 26, 2023
+# version ='1.1'
 # ---------------------------------------------------------------------------
 """ 
     A python file to clear the Mini-Circuits Mesh Attenuator
