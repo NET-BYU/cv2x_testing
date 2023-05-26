@@ -38,16 +38,18 @@ Here you will gather the static attenuation values that reside between your send
 
 In the process of transmitting messages from one device to another, you will be trying to measure and control the attenuation between devices. Some of this attenuation will be adjusted automatically by the mesh attenuator. However, the natural properties of the mesh attenuator, RF cabling, and any splitters you are using, will introduce additional static attenuation. How much static attenuation is introduced can vary from one cable to the next, and this variation needs to be controlled for in order to prevent the data from being artificially skewed.
 
-In order for the attenuation values to be equal across receiving devices, you need to take measurements of the total _static attenuation_ between the transmitters and the receivers while the _dynamic attenuation_ is set to 0. To make this easy, you can simply edit and run the following file:
+In order for the attenuation values to be equal across receiving devices, you need to take measurements of the total _static attenuation_ between the transmitters and the receivers while the _dynamic attenuation_ is set to 0. To make this easy, you can simply edit and run the following lines:
 
-In `resource/clear_mesh.py`, edit the following line, replacing `192.168.0.1` with the IPv4 ip address of the Mini-Circuits ZTMN-0695B-S.
+Run this command after editing the following line, replacing `192.168.0.1` with the IPv4 ip address of the Mini-Circuits ZTMN-0695B-S.
 ```python
-ip_address = '192.168.0.1'
+echo ip_address: 192.168.0.1 > resources/mesh_ip.yml
 ```
-then run it using the command
+then run the clear_mesh.py file using the command
 ```bash
 python3 resources/clear_mesh.py
 ```
+If the IP address is invalid or does not connect to a mesh attenuator device, the script will fail.
+
 This should set the dynamic attenuation between each and every link to 0. If you have everything hooked up on RF cables, though, you will still get some static attenuation from the RF cables, the mesh, and any splitters you are using. What you need to do is take measurements using something like a spectrum analyzer at the receiving end of _each_ communication endpoint to measure how attenuated the transmitted signal is compared to coming out of the sending device (so record once at the transmitter and again at the end of the line of cables leading to each receiver). Record these static attenuation values for each receiver; we will refer to these as `static_att` measurements later on in this readme.
 
 <details>
