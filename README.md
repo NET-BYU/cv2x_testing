@@ -38,7 +38,7 @@ Here you will gather the static attenuation values that reside between your send
 
 In the process of transmitting messages from one device to another, you will be trying to measure and control the attenuation between devices. Some of this attenuation will be adjusted automatically by the mesh attenuator. However, the natural properties of the mesh attenuator, RF cabling, and any splitters you are using, will introduce additional static attenuation. How much static attenuation is introduced can vary from one cable to the next, and this variation needs to be controlled for in order to prevent the data from being artificially skewed.
 
-In order for the attenuation values to be equal across receiving devices, you need to take measurements of the total _static attenuation_ between the transmitters and the receivers while the _dynamic attenuation_ is set to 0. To make this easy, you can simply edit and run the following file:
+In order for the attenuation values to be equal across receiving devices, you need to take measurements of the total _static attenuation_ between the transmitters and the receivers while the _dynamic attenuation_ is set to 0. To make this easy, you can simply edit and run the following lines:
 
 Run this command after editing the following line, replacing `192.168.0.1` with the IPv4 ip address of the Mini-Circuits ZTMN-0695B-S.
 ```python
