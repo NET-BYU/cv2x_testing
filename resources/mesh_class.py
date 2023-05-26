@@ -81,6 +81,18 @@ class MeshClass:
         """
         self.address = address
 
+        ports = channels["AB"]
+        block = ports[0]
+        channel = ports[1]
+
+        http = urllib3.PoolManager()
+        response = http.request(
+            'GET', f"http://{self.address}/:0{block}:CHAN:{channel}:ATT?")
+
+        if response.status != 200:
+            raise ValueError('Device at %s is not a viable mesh attenuator.' % address)
+
+
     def set_att(self, port1: str, port2: str, atten: float):
         """
         set_att:
